@@ -1,0 +1,35 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.cybertron.cybertrondictserver"
+          android:versionCode="1"
+          android:versionName="1.0">
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="18"/>
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/transspport"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity android:name="com.cybertron.service.ClipBoardActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN">
+                </action>
+
+                <category android:name="android.intent.category.LAUNCHER">
+                </category>
+            </intent-filter>
+        </activity>
+
+        <service android:name="com.cybertron.service.ClipBoardService">
+        </service>
+        <service android:name="com.cybertron.service.FloatingWindowService">
+        </service>
+    </application>
+
+</manifest>

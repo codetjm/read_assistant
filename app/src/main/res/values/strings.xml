@@ -1,0 +1,17 @@
+<resources>
+
+    <string name="app_name">读书助手</string>
+
+    <string name="demo_text">
+        使用说明：
+            该软件用于读书看字时，不懂的词汇可翻译。
+            1、先点击startService，再点击bindService。若提示开启悬浮窗，请在相关设置里开启悬浮窗。
+            2、再使用该软件时务必保持后台运行。
+            3、使用时，长按不认识词汇，选中该词汇，点击复制，即可翻译。
+        </string>
+    
+
+    
+    
+    
+</resources>
