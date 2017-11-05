@@ -3,6 +3,7 @@
     <string name="app_name">读书助手</string>
 
     <string name="demo_text">
+        欢欢宝宝，我爱你！！\n
         使用说明：
             该软件用于读书看字时，不懂的词汇可翻译。
             1、先点击startService，再点击bindService。若提示开启悬浮窗，请在相关设置里开启悬浮窗。
