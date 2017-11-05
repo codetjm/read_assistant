@@ -12,7 +12,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "com.cybertron.cybertrondictserver"
+        applicationId "com.hk.read"
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1000
@@ -37,6 +37,7 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.config
         }
     }
     productFlavors {
