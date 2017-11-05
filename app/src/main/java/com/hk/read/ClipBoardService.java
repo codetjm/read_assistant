@@ -1,4 +1,4 @@
-package com.cybertron.service;
+package com.hk.read;
 
 import android.app.Service;
 import android.content.ClipData;
@@ -12,8 +12,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.cybertron.service.http.HttpUtils;
-import com.cybertron.service.http.OnResultListener;
+import com.hk.read.http.HttpUtils;
+import com.hk.read.http.OnResultListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;

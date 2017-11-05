@@ -1,6 +1,5 @@
-package com.cybertron.service;
+package com.hk.read;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,9 +14,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.cybertron.cybertrondictserver.R;
+import com.hk.read.base.BaseActivity;
 
-public class ClipBoardActivity extends Activity implements OnClickListener {
+public class ClipBoardActivity extends BaseActivity implements OnClickListener {
 
 	private TextView mResultTextView;
 

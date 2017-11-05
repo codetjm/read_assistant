@@ -1,4 +1,4 @@
-package com.cybertron.service.http;
+package com.hk.read.http;
 
 /******************************************
  * author: changfeng (changfeng@51huxin.com)

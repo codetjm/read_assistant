@@ -1,4 +1,4 @@
-package com.cybertron.service;
+package com.hk.read;
 
 import android.app.Service;
 import android.content.Context;
@@ -14,8 +14,6 @@ import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.cybertron.cybertrondictserver.R;
 
 public class FloatingWindowService extends Service{
 
