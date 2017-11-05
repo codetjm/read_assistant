@@ -15,8 +15,8 @@ android {
         applicationId "com.hk.read"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 1000
-        versionName "1.0.0"
+        versionCode 1002
+        versionName "1.0.02"
         manifestPlaceholders = [
                 GETUI_APP_ID    : "yveZROucjz5W4B47yjoNu5",
                 GETUI_APP_KEY   : "cMMcwEq8sj6XEflcN0ZOrA",
@@ -26,6 +26,16 @@ android {
             abiFilters "armeabi", "armeabi-v7a", "x86_64"
         }
         signingConfig signingConfigs.config
+
+
+        android {
+            lintOptions {
+                checkReleaseBuilds false
+                // Or, if you prefer, you can continue to check for errors in release builds,
+                // but continue the build even when errors are found:
+                abortOnError false
+            }
+        }
     }
     buildTypes {
         release {
@@ -45,8 +55,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.android.support:support-v4:25.3.1'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.getui:sdk:2.11.1.0'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
+    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
 }
