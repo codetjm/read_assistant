@@ -11,27 +11,33 @@
         android:id="@+id/out_log"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_weight="0.68"
+        android:layout_weight="0.96"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
         android:hint="日志输出区域"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:weightSum="3"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/start_scan"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:text="启动扫描"/>
         <Button
             android:id="@+id/word_explain"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:text="文字解析"/>
         <Button
             android:id="@+id/send"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:layout_height="48dp"
             android:text="发送"/>
     </LinearLayout>

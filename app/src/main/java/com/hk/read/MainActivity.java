@@ -52,8 +52,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void onResult(AccessToken result) {
                         // 调用成功，返回AccessToken对象
-                        String token = result.getAccessToken();
-                        Log.e("====","token:"+token);
+                        baiduToken = result.getAccessToken();
+                        Log.e("====","baiduToken:"+baiduToken);
 //                        Toast.makeText(getApplicationContext(), "文字识别授权成功:" + token, Toast.LENGTH_LONG).show();
                     }
 

@@ -7,6 +7,7 @@ import android.app.Activity;
  */
 
 public interface IOcrView {
+    //未解析，解析中，解析后，为发送，发送前，发送后
     void updateLog(String msg);
     void updateBtnStatu(int statu);
     Activity getContext();
