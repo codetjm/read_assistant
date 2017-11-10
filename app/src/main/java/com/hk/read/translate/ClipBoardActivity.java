@@ -1,4 +1,4 @@
-package com.hk.read;
+package com.hk.read.translate;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -14,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.hk.read.R;
 import com.hk.read.base.BaseActivity;
 
 public class ClipBoardActivity extends BaseActivity implements OnClickListener {

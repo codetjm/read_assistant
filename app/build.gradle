@@ -55,10 +55,14 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:25.3.1'
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    //其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
+    //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'com.android.support:support-v4:25.3.1'
     compile 'com.getui:sdk:2.11.1.0'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
-    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile project(':ocr_ui')
 }

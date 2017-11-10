@@ -1,4 +1,4 @@
-package com.hk.read;
+package com.hk.read.translate;
 
 import android.app.Service;
 import android.content.ClipData;

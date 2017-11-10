@@ -1,4 +1,4 @@
-package com.hk.read;
+package com.hk.read.translate;
 
 import android.app.Service;
 import android.content.Context;
@@ -14,6 +14,8 @@ import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.hk.read.R;
 
 public class FloatingWindowService extends Service{
 
