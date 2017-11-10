@@ -15,8 +15,8 @@ android {
         applicationId "com.hk.read"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 1003
-        versionName "1.0.03"
+        versionCode 1004
+        versionName "1.0.04"
         manifestPlaceholders = [
                 GETUI_APP_ID    : "yveZROucjz5W4B47yjoNu5",
                 GETUI_APP_KEY   : "cMMcwEq8sj6XEflcN0ZOrA",
