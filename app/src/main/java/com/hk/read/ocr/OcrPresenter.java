@@ -12,6 +12,8 @@ import com.baidu.ocr.sdk.model.WordSimple;
 import com.baidu.ocr.ui.camera.CameraActivity;
 import com.hk.read.ocr.imp.IOcrPresenter;
 import com.hk.read.ocr.imp.IOcrView;
+import com.hk.read.ocr.imp.entity.OcrImg;
+import com.hk.read.utils.FileUtil;
 
 import java.io.File;
 
@@ -29,11 +31,11 @@ public class OcrPresenter implements IOcrPresenter {
     }
 
     @Override
-    public void startWordRecgnize() {
+    public void startWordRecgnize(int page) {
         // 生成intent对象
         Intent intent = new Intent(mOcrView.getContext(), CameraActivity.class);
         try {
-            intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH, com.hk.read.FileUtil.getSaveFile(mOcrView.getContext()).getAbsolutePath());
+            intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH, FileUtil.getSaveFile(mOcrView.getContext(),page).getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,10 +43,10 @@ public class OcrPresenter implements IOcrPresenter {
     }
 
     @Override
-    public void handleResult(String filePath) {
-        GeneralParams param = new GeneralParams();
+    public void handleResult(final OcrImg ocrImg) {
+        final GeneralParams param = new GeneralParams();
         param.setDetectDirection(true);
-        param.setImageFile(new File(filePath));
+        param.setImageFile(new File(ocrImg.filePath));
 // 调用通用文字识别服务
         OCR.getInstance().recognizeGeneral(param, new OnResultListener<GeneralResult>() {
             @Override
@@ -57,11 +59,13 @@ public class OcrPresenter implements IOcrPresenter {
                     sb.append("\n");
                 }
                 mOcrView.updateLog("\n扫描到的文字如下：\n" + sb.toString());
-                long l = System.currentTimeMillis();
-//                FileUtil.saveFile(mOcrView.getContext(),l+"",sb.toString());
+                String path = ocrImg.filePath;
+                String substring = path.substring(path.lastIndexOf("/") + 1);
+                String fileName = substring.substring(0, substring.lastIndexOf("."));
+                File file = FileUtil.saveFile(mOcrView.getContext(), fileName + ".txt", sb.toString());
                 Log.i("====",sb.toString());
-                mOcrView.updateLog("解析后的文字写入成功：\n" );
-                mOcrView.updateLog("写入路径：\n" + l+".txt");
+                mOcrView.updateLog("\n解析后的文字写入成功" );
+                mOcrView.updateLog("\n写入路径：\n" +file.getAbsolutePath());
                 mOcrView.updateBtnStatu(0);
             }
 
