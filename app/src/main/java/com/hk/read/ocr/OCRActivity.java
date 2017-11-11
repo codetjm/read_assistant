@@ -11,14 +11,16 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hk.read.R;
 import com.hk.read.base.BaseActivity;
+import com.hk.read.ocr.entity.PageInput;
 import com.hk.read.ocr.imp.IOcrPresenter;
 import com.hk.read.ocr.imp.IOcrView;
-import com.hk.read.ocr.imp.entity.OcrImg;
+import com.hk.read.ocr.entity.OcrImg;
 
 
 public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickListener {
@@ -30,6 +32,8 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
 
     private IOcrPresenter presenter;
     private String mPath;
+    private Button mergeWord;
+    private Button clearData;
 
 
     @Override
@@ -45,11 +49,15 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
         wordExplain = (Button) findViewById(R.id.word_explain);
         send = (Button) findViewById(R.id.send);
         logView = (TextView) findViewById(R.id.out_log);
-//        logView.setText("", TextView.BufferType.EDITABLE);
+        mergeWord = (Button) findViewById(R.id.merge_word);
+        clearData = (Button) findViewById(R.id.clear_data);
+
         logView.setMovementMethod(ScrollingMovementMethod.getInstance());
         startCan.setOnClickListener(this);
         wordExplain.setOnClickListener(this);
         send.setOnClickListener(this);
+        mergeWord.setOnClickListener(this);
+        clearData.setOnClickListener(this);
     }
 
     @Override
@@ -87,9 +95,9 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                 //启动扫描
                 showEt(new InputListener() {
                     @Override
-                    public void input(String page) {
+                    public void input(PageInput page) {
                         try {
-                            int num = Integer.parseInt(page);
+                            int num = Integer.parseInt(page.arg1);
                             presenter.startWordRecgnize(num);
                         } catch (Exception e) {
                             Toast.makeText(OCRActivity.this, "请输入数字", Toast.LENGTH_LONG).show();
@@ -103,7 +111,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
             case R.id.word_explain:
                 //解析文字
                 if (TextUtils.isEmpty(mPath)) {
-                    updateLog("还未拍照，请拍照后重试");
+                    updateLog("\n还未拍照，请拍照后重试");
                     return;
                 }
 
@@ -112,6 +120,13 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                 presenter.handleResult(new OcrImg(mPath));
 
 
+                break;
+            case R.id.merge_word:
+                showMergeEt();
+                break;
+
+            case R.id.clear_data:
+                showClearDialog();
                 break;
             case R.id.send:
                 //发送文字
@@ -154,8 +169,8 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                             updateLog("\n输入的页码为空");
                             Toast.makeText(getApplicationContext(), "搜索内容不能为空！" + input, Toast.LENGTH_LONG).show();
                         } else {
-                            updateLog("\n输入的页码:"+input);
-                            listener.input(input);
+                            updateLog("\n输入的页码:" + input);
+                            listener.input(new PageInput(input));
                         }
                     }
                 })
@@ -165,9 +180,67 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
 
     }
 
+    private void showMergeEt() {
+        final LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setWeightSum(2);
+
+        final EditText startEt = new EditText(this);
+        startEt.setHint("输入要合并的起始页");
+        startEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        final EditText endEt = new EditText(this);
+        endEt.setHint("输入要合并的结束页（包含）");
+        endEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        layout.removeAllViews();
+        layout.addView(startEt);
+        layout.addView(endEt);
+        new AlertDialog.Builder(this).setTitle("请输入页码")
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setView(layout)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String startInput = startEt.getText().toString();
+                        String endInput = endEt.getText().toString();
+                        if (startInput.equals("") || endInput.equals("")) {
+                            updateLog("\n输入的页码为空");
+                            Toast.makeText(getApplicationContext(), "搜索内容不能为空！" + startInput, Toast.LENGTH_LONG).show();
+                        } else {
+                            updateLog("\n输入的页码:" + startInput + "—" + endInput);
+                            try {
+                                int start = Integer.parseInt(startInput);
+                                int end = Integer.parseInt(endInput);
+                                presenter.mergePage(start, end);
+                            } catch (Exception e) {
+                                Toast.makeText(OCRActivity.this, "请输入数字", Toast.LENGTH_LONG).show();
+                                updateLog("\n输入页码不合法");
+                            }
+                        }
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
+
+
+    }
+
+    private void showClearDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setIcon(R.drawable.transspport)
+                .setTitle("警告")
+                .setMessage("清理数据，是将以前的拍照和解析的缓存文件全部删除。清理后，无法复原。")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateLog("\n确认清理。");
+                        presenter.clearWord();
+                    }
+                })
+                .setNegativeButton("取消", null);
+        builder.show();
+    }
 
     interface InputListener {
-        void input(String page);
+        void input(PageInput page);
     }
 }
 

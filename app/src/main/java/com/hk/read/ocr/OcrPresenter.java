@@ -10,10 +10,12 @@ import com.baidu.ocr.sdk.model.GeneralParams;
 import com.baidu.ocr.sdk.model.GeneralResult;
 import com.baidu.ocr.sdk.model.WordSimple;
 import com.baidu.ocr.ui.camera.CameraActivity;
+import com.hk.read.ocr.entity.OcrImg;
 import com.hk.read.ocr.imp.IOcrPresenter;
 import com.hk.read.ocr.imp.IOcrView;
-import com.hk.read.ocr.imp.entity.OcrImg;
 import com.hk.read.utils.FileUtil;
+import com.hk.read.utils.OnFileOprateListener;
+import com.hk.read.utils.TextUtils;
 
 import java.io.File;
 
@@ -35,7 +37,7 @@ public class OcrPresenter implements IOcrPresenter {
         // 生成intent对象
         Intent intent = new Intent(mOcrView.getContext(), CameraActivity.class);
         try {
-            intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH, FileUtil.getSaveFile(mOcrView.getContext(),page).getAbsolutePath());
+            intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH, FileUtil.getSaveFile(mOcrView.getContext(), page).getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,22 +54,9 @@ public class OcrPresenter implements IOcrPresenter {
             @Override
             public void onResult(GeneralResult result) {
                 // 调用成功，返回GeneralResult对象
-                StringBuilder sb = new StringBuilder();
-                for (WordSimple wordSimple : result.getWordList()) {
-                    // wordSimple不包含位置信息
-                    sb.append(wordSimple.getWords());
-                    sb.append("\n");
-                }
-                mOcrView.updateLog("\n扫描到的文字如下：\n" + sb.toString());
-                String path = ocrImg.filePath;
-                String substring = path.substring(path.lastIndexOf("/") + 1);
-                String fileName = substring.substring(0, substring.lastIndexOf("."));
-                File file = FileUtil.saveFile(mOcrView.getContext(), fileName + ".txt", sb.toString());
-                Log.i("====",sb.toString());
-                mOcrView.updateLog("\n解析后的文字写入成功" );
-                mOcrView.updateLog("\n写入路径：\n" +file.getAbsolutePath());
-                mOcrView.updateBtnStatu(0);
+                handlerText(result, ocrImg);
             }
+
 
             @Override
             public void onError(final OCRError error) {
@@ -77,4 +66,70 @@ public class OcrPresenter implements IOcrPresenter {
             }
         });
     }
+
+    @Override
+    public boolean mergePage(int start, int end) {
+        if (start >= end && start != 0) {
+            mOcrView.updateLog("输入的起始页码应小于结束页码");
+            return false;
+        }
+
+        boolean b = FileUtil.mergeFile(start, end, new OnFileOprateListener() {
+            @Override
+            public void sendMesage(int code, String msg) {
+                mOcrView.updateLog(msg);
+            }
+        });
+        return b;
+    }
+
+    @Override
+    public boolean clearWord() {
+        return FileUtil.claarStore();
+    }
+
+
+    private void handlerText(GeneralResult result, OcrImg ocrImg) {
+        StringBuilder sb = new StringBuilder();
+        String preTemp = "";
+        for (WordSimple wordSimple : result.getWordList()) {
+            // wordSimple不包含位置信息
+            boolean isParagraphLastLine = TextUtils.isParagraphLastLine(preTemp);
+            if (isParagraphLastLine) {
+                sb.append("\n");
+            }
+            String words = wordSimple.getWords();
+//            boolean isLast = TextUtils.isParagraphLastLine(words);
+//            if (isLast) {
+//                if (words.length() != 0) {
+//                    char c = words.charAt(words.length() - 1);
+//                    if (!(".".equals(c) || "。".equals(c) || "！".equals(c) || "!".equals(c))) {
+//                        if (!TextUtils.isParagraphLastLine(preTemp)) {
+//                            words += "。";
+//                        }
+//                    }
+//                }
+//            }
+            String formatLine = TextUtils.formatLine(preTemp, words);
+            sb.append(formatLine);
+
+            preTemp = formatLine;
+        }
+
+        mOcrView.updateLog("\n扫描到的文字如下：\n" + sb.toString());
+        String path = ocrImg.filePath;
+        String substring = path.substring(path.lastIndexOf("/") + 1);
+        String fileName = substring.substring(0, substring.lastIndexOf("."));
+        //替换标点符号
+        File file = FileUtil.saveFile(fileName + ".txt", sb.toString(), new OnFileOprateListener() {
+            @Override
+            public void sendMesage(int code, String msg) {
+                mOcrView.updateLog(msg);
+            }
+        });
+        Log.i("====", sb.toString());
+        mOcrView.updateBtnStatu(0);
+    }
+
+
 }

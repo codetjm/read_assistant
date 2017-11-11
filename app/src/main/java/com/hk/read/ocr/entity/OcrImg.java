@@ -1,4 +1,4 @@
-package com.hk.read.ocr.imp.entity;
+package com.hk.read.ocr.entity;
 
 /**
  * Created by changfeng on 2017/11/11.
