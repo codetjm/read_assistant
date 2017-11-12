@@ -17,10 +17,13 @@ import android.widget.Toast;
 
 import com.hk.read.R;
 import com.hk.read.base.BaseActivity;
+import com.hk.read.ocr.entity.OcrImg;
 import com.hk.read.ocr.entity.PageInput;
 import com.hk.read.ocr.imp.IOcrPresenter;
 import com.hk.read.ocr.imp.IOcrView;
-import com.hk.read.ocr.entity.OcrImg;
+import com.hk.read.utils.FileUtil;
+
+import java.util.List;
 
 
 public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickListener {
@@ -130,12 +133,44 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                 break;
             case R.id.send:
                 //发送文字
-
-
+                showFileList();
                 break;
             default:
         }
     }
+    //单选选中的文件
+    int choice = 0;
+    private void showFileList() {
+         List<String> files = FileUtil.getAllSaveTxtFile(this);
+        //list转为数组
+        final String[] strings = new String[files.size()];
+        for (int i = 0; i < files.size(); i++) {
+            strings[i] = files.get(i);
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("选择发送的文件")
+                .setIcon(R.drawable.icon)
+                //默认选中了哪些，点击也不会自动关闭
+                .setSingleChoiceItems(strings, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice = which;
+                      updateLog("\n选中了"+strings[which]);
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateLog("\n正在发送" + strings[choice]);
+                        presenter.sendTxt(strings[choice]);
+                    }
+                })
+                .setNegativeButton("取消",null)
+                .create().show();
+
+
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -160,7 +195,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
         et.setHint("输入要扫描页码");
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
         new AlertDialog.Builder(this).setTitle("请输入页码")
-                .setIcon(android.R.drawable.ic_dialog_info)
+                .setIcon(R.drawable.icon)
                 .setView(et)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -195,7 +230,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
         layout.addView(startEt);
         layout.addView(endEt);
         new AlertDialog.Builder(this).setTitle("请输入页码")
-                .setIcon(android.R.drawable.ic_dialog_info)
+                .setIcon(R.drawable.icon)
                 .setView(layout)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -225,14 +260,15 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
 
     private void showClearDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setIcon(R.drawable.transspport)
+                .setIcon(R.drawable.icon)
                 .setTitle("警告")
                 .setMessage("清理数据，是将以前的拍照和解析的缓存文件全部删除。清理后，无法复原。")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         updateLog("\n确认清理。");
-                        presenter.clearWord();
+                        boolean b = presenter.clearWord();
+                        updateLog(b ? "\n清理成功" : "\n清理失败");
                     }
                 })
                 .setNegativeButton("取消", null);

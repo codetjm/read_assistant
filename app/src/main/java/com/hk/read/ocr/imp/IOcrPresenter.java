@@ -10,6 +10,7 @@ public interface IOcrPresenter {
     //扫描第几页
     void startWordRecgnize(int page);
     void handleResult(OcrImg img);
+    void sendTxt(String filePath);
     boolean mergePage(int start,int end);
     boolean clearWord();
 }

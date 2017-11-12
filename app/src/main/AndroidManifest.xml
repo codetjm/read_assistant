@@ -50,8 +50,21 @@
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"
-            android:theme="@android:style/Theme.Translucent"/>
+               android:theme="@android:style/Theme.Translucent"/>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.hk.read.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
+        作者：zhuhf
+        链接：http://www.jianshu.com/p/55eae30d133c
+        來源：简书
+        著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
         <service android:name=".translate.ClipBoardService">
         </service>
         <service android:name=".translate.FloatingWindowService">

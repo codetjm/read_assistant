@@ -68,6 +68,16 @@ public class OcrPresenter implements IOcrPresenter {
     }
 
     @Override
+    public void sendTxt(String filePath) {
+      FileUtil.shareFile(mOcrView.getContext(), filePath, new OnFileOprateListener() {
+          @Override
+          public void sendMesage(int code, String msg) {
+              mOcrView.updateLog(msg);
+          }
+      });
+    }
+
+    @Override
     public boolean mergePage(int start, int end) {
         if (start >= end && start != 0) {
             mOcrView.updateLog("输入的起始页码应小于结束页码");

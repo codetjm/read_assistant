@@ -1,9 +1,13 @@
 package com.hk.read;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.baidu.ocr.sdk.OCR;
 import com.baidu.ocr.sdk.OnResultListener;
@@ -18,6 +22,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private View scan;
     private View translate;
+    private TextView mTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         init();
         scan = findViewById(R.id.scan);
         translate = findViewById(R.id.translate);
+        mTextView = (TextView) findViewById(R.id.version);
+        mTextView.append(getAppVersionName(this));
         scan.setOnClickListener(this);
         translate.setOnClickListener(this);
 
@@ -73,5 +80,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         thread.start();
 
+    }
+
+    /**
+     * 返回当前程序版本名
+     */
+    public static String getAppVersionName(Context context) {
+        String versionName = "";
+        int versioncode = 0;
+        try {
+            // ---get the package info---
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
+            versionName = pi.versionName;
+            versioncode = pi.versionCode;
+            if (versionName == null || versionName.length() <= 0) {
+                return "";
+            }
+        } catch (Exception e) {
+            Log.e("VersionInfo", "Exception", e);
+        }
+        Log.i("====","versionName:"+versionName);
+        return versionName;
     }
 }
