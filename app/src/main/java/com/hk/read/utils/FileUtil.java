@@ -202,7 +202,7 @@ public class FileUtil {
 
             in.close();
 
-            return new String(buffer, "utf-8");
+            return new String(buffer, "gb2312");
 
         } catch (IOException e) {
 
