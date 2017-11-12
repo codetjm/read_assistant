@@ -1,14 +1,16 @@
 package com.hk.read.utils;
 
+import java.nio.charset.Charset;
+
 /**
  * Created by changfeng on 2017/11/11.
  */
 
 public class TextUtils {
     //默认是36个字符。
-    public static final int LINE_WORDS_SUM = 33;
+    public static final int LINE_WORDS_SUM_BYTE = 65;
 
-    private static int line_char_sum = LINE_WORDS_SUM;
+    private static int line_char_sum = LINE_WORDS_SUM_BYTE;
 
     public static String[] ENG_PUNCTUATION_SINGLE= {",",".","?","!",":",";","<<",">>","(",")"};
     public static String[] ENG_PUNCTUATION_PAIR= {"\"","'"};
@@ -28,7 +30,9 @@ public class TextUtils {
      */
     public static boolean isParagraphLastLine(String line) {
         if (line!=null) {
-            if (line.length() < line_char_sum&&line.length()!=0) {
+            byte[] bytes = line.getBytes(Charset.forName("gb2312"));
+            int length = bytes.length;
+            if (length < line_char_sum&&line.length()!=0) {
                 return true;
             } else {
                 return false;
@@ -65,7 +69,7 @@ public class TextUtils {
 
         for (int i = 0; i < ENG_PUNCTUATION_SINGLE.length; i++) {
             //替换单一标点符号
-            text.replace(ENG_PUNCTUATION_SINGLE[i],CHA_PUNCTUATION_SINGLE[i]);
+            text = text.replace(ENG_PUNCTUATION_SINGLE[i],CHA_PUNCTUATION_SINGLE[i]);
             //替换成对标点符号
         }
 

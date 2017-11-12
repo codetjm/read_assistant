@@ -98,7 +98,7 @@ public class FileUtil {
             listener.sendMesage(0, "\n文件创建完成");
             FileOutputStream fos = new FileOutputStream(myFile);
             OutputStreamWriter osw = new OutputStreamWriter(fos, "gb2312");
-            osw.write(txt);
+            osw.write(TextUtils.replacePunctuation(txt));
             osw.flush();
             fos.flush();
             osw.close();
