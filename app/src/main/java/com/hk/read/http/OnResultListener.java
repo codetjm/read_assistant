@@ -10,5 +10,5 @@ package com.hk.read.http;
 
 public interface OnResultListener {
     void onSuccess(String json);
-    void onFial();
+    void onFial(int statu,String errorMsg);
 }

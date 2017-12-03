@@ -10,11 +10,18 @@ import com.tencent.bugly.Bugly;
  */
 
 public class MyApplication extends Application {
+    static MyApplication app;
 
+    public static MyApplication getApp() {
+        return app;
+    }
+
+    public  String token = "";
     @Override
     public void onCreate() {
         super.onCreate();
 //        bugly初始化，版本神级
+        app = this;
         Bugly.init(getApplicationContext(), "c823e70556", false);
         //创建扫描结果保存路径
 //        FileUtil.createFile(new File(Constant.WORDS_DIRECTORY_NAME));
@@ -28,5 +35,11 @@ public class MyApplication extends Application {
 
     }
 
+    public String getToken() {
+        return token;
+    }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

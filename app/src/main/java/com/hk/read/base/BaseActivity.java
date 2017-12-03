@@ -11,10 +11,12 @@ import com.igexin.sdk.PushManager;
  */
 
 public class BaseActivity extends Activity {
-    public String baiduToken = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PushManager.getInstance().initialize(this.getApplicationContext(), GeTuiPushService.class);
     }
+
+
 }

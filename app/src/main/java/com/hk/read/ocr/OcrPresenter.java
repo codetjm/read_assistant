@@ -10,6 +10,7 @@ import com.baidu.ocr.sdk.model.GeneralParams;
 import com.baidu.ocr.sdk.model.GeneralResult;
 import com.baidu.ocr.sdk.model.WordSimple;
 import com.baidu.ocr.ui.camera.CameraActivity;
+import com.hk.read.http.HttpUtils;
 import com.hk.read.ocr.entity.OcrImg;
 import com.hk.read.ocr.imp.IOcrPresenter;
 import com.hk.read.ocr.imp.IOcrView;
@@ -17,14 +18,19 @@ import com.hk.read.utils.FileUtil;
 import com.hk.read.utils.OnFileOprateListener;
 import com.hk.read.utils.TextUtils;
 
+import org.json.JSONObject;
+
 import java.io.File;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by changfeng on 2017/11/10.
  */
 
 public class OcrPresenter implements IOcrPresenter {
-    public static final int START_CAMERA_REQUEST_CODE = 10001;
+    public static final int START_CAMERA_WORD_REQUEST_CODE = 10001;
+    public static final int START_CAMERA_FORM_REQUEST_CODE = 10002;
 
     private IOcrView mOcrView;
 
@@ -41,7 +47,7 @@ public class OcrPresenter implements IOcrPresenter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mOcrView.getContext().startActivityForResult(intent, START_CAMERA_REQUEST_CODE);
+        mOcrView.getContext().startActivityForResult(intent, START_CAMERA_WORD_REQUEST_CODE);
     }
 
     @Override
@@ -69,12 +75,12 @@ public class OcrPresenter implements IOcrPresenter {
 
     @Override
     public void sendTxt(String filePath) {
-      FileUtil.shareFile(mOcrView.getContext(), filePath, new OnFileOprateListener() {
-          @Override
-          public void sendMesage(int code, String msg) {
-              mOcrView.updateLog(msg);
-          }
-      });
+        FileUtil.shareFile(mOcrView.getContext(), filePath, new OnFileOprateListener() {
+            @Override
+            public void sendMesage(int code, String msg) {
+                mOcrView.updateLog(msg);
+            }
+        });
     }
 
     @Override
@@ -96,6 +102,54 @@ public class OcrPresenter implements IOcrPresenter {
     @Override
     public boolean clearWord() {
         return FileUtil.claarStore();
+    }
+
+    @Override
+    public void scanForm(String filePath) {
+        mOcrView.setFormNum(-1);
+
+        HttpUtils.getFormResult(filePath)
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        JSONObject obj = new JSONObject(s);
+                        String string = obj.optString("result_data");
+                        if (android.text.TextUtils.isEmpty(string)) {
+                            if (obj.has("request_id")) {
+                                HttpUtils.pollResult(obj.getString("request_id"), new com.hk.read.http.OnResultListener() {
+                                    @Override
+                                    public void onSuccess(final String json) {
+                                        mOcrView.getContext().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mOcrView.updateLog("\n表格地址："+json);
+                                                FileUtil.appendTxt("表格地址.txt", mOcrView.getFormNum() + ":" + json+"\n.", new OnFileOprateListener() {
+                                                    @Override
+                                                    public void sendMesage(int code, String msg) {
+                                                        mOcrView.updateLog(msg);
+                                                        mOcrView.setFormNum(-1);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFial(int statu, final String errorMsg) {
+                                        mOcrView.getContext().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mOcrView.updateLog(errorMsg);
+                                            }
+                                        });
+                                    }
+                                }).subscribe();
+                            }
+                        }
+                    }
+                })
+                .subscribe();
+
     }
 
 

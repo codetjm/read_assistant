@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.ocr.ui.camera.CameraActivity;
 import com.hk.read.R;
 import com.hk.read.base.BaseActivity;
 import com.hk.read.ocr.entity.OcrImg;
@@ -24,6 +25,9 @@ import com.hk.read.ocr.imp.IOcrView;
 import com.hk.read.utils.FileUtil;
 
 import java.util.List;
+
+import static com.hk.read.ocr.OcrPresenter.START_CAMERA_FORM_REQUEST_CODE;
+import static com.hk.read.ocr.OcrPresenter.START_CAMERA_WORD_REQUEST_CODE;
 
 
 public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickListener {
@@ -37,6 +41,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
     private String mPath;
     private Button mergeWord;
     private Button clearData;
+    private Button startScanForm;
 
 
     @Override
@@ -54,6 +59,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
         logView = (TextView) findViewById(R.id.out_log);
         mergeWord = (Button) findViewById(R.id.merge_word);
         clearData = (Button) findViewById(R.id.clear_data);
+        startScanForm = (Button) findViewById(R.id.start_scan_form);
 
         logView.setMovementMethod(ScrollingMovementMethod.getInstance());
         startCan.setOnClickListener(this);
@@ -61,6 +67,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
         send.setOnClickListener(this);
         mergeWord.setOnClickListener(this);
         clearData.setOnClickListener(this);
+        startScanForm.setOnClickListener(this);
     }
 
     @Override
@@ -92,6 +99,16 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
     }
 
     @Override
+    public int getFormNum() {
+        return formNum;
+    }
+
+    @Override
+    public void setFormNum(int formNum) {
+        this.formNum = formNum;
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.start_scan:
@@ -108,7 +125,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                         }
 
                     }
-                });
+                },"输入要扫描的页码","请输入页码");
 
                 break;
             case R.id.word_explain:
@@ -129,19 +146,51 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                 break;
 
             case R.id.clear_data:
+
                 showClearDialog();
                 break;
             case R.id.send:
                 //发送文字
                 showFileList();
                 break;
+            case R.id.start_scan_form:
+                //扫描表格
+                if (formNum<0){
+                    updateLog("\n请扫描表格照片");
+                    return;
+                }
+                showEt(new InputListener() {
+                    @Override
+                    public void input(PageInput page) {
+                        try {
+                            int num = Integer.parseInt(page.arg1);
+                            formNum = num;
+                            Intent intent = new Intent(OCRActivity.this, CameraActivity.class);
+                            try {
+                                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH, FileUtil.getSaveFile(OCRActivity.this, num).getAbsolutePath());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            startActivityForResult(intent, START_CAMERA_FORM_REQUEST_CODE);
+                        } catch (Exception e) {
+                            Toast.makeText(OCRActivity.this, "请输入数字", Toast.LENGTH_LONG).show();
+                            updateLog("\n输入页码不合法");
+                        }
+
+                    }
+                },"输入表格编号","请输入编号");
+
+                break;
+
             default:
         }
     }
+    int formNum = 1;
     //单选选中的文件
     int choice = 0;
+
     private void showFileList() {
-         List<String> files = FileUtil.getAllSaveTxtFile(this);
+        List<String> files = FileUtil.getAllSaveTxtFile(this);
         //list转为数组
         final String[] strings = new String[files.size()];
         for (int i = 0; i < files.size(); i++) {
@@ -155,7 +204,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         choice = which;
-                      updateLog("\n选中了"+strings[which]);
+                        updateLog("\n选中了" + strings[which]);
                     }
                 })
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -165,7 +214,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
                         presenter.sendTxt(strings[choice]);
                     }
                 })
-                .setNegativeButton("取消",null)
+                .setNegativeButton("取消", null)
                 .create().show();
 
 
@@ -175,7 +224,7 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == OcrPresenter.START_CAMERA_REQUEST_CODE) {
+        if (requestCode == START_CAMERA_WORD_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 //处理成功
                 mPath = data.getStringExtra("filePath");
@@ -184,17 +233,21 @@ public class OCRActivity extends BaseActivity implements IOcrView, View.OnClickL
             }
 
 //                presenter.handleResult();
+        } else if (requestCode == START_CAMERA_FORM_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                presenter.scanForm(data.getStringExtra("filePath"));
+            }
         } else {
             updateLog("拍照失败，请重试");
         }
     }
 
 
-    private void showEt(final InputListener listener) {
+    private void showEt(final InputListener listener,String hint,String title) {
         final EditText et = new EditText(this);
-        et.setHint("输入要扫描页码");
+        et.setHint(hint);
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
-        new AlertDialog.Builder(this).setTitle("请输入页码")
+        new AlertDialog.Builder(this).setTitle(title)
                 .setIcon(R.drawable.icon)
                 .setView(et)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {

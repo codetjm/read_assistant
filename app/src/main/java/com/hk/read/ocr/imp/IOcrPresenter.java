@@ -13,4 +13,5 @@ public interface IOcrPresenter {
     void sendTxt(String filePath);
     boolean mergePage(int start,int end);
     boolean clearWord();
+    void scanForm(String filePath);
 }

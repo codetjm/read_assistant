@@ -11,4 +11,6 @@ public interface IOcrView {
     void updateLog(String msg);
     void updateBtnStatu(int statu);
     Activity getContext();
+    int getFormNum();
+    void setFormNum(int formNum);
 }

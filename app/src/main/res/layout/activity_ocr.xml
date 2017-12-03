@@ -44,6 +44,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:weightSum="3"
         android:orientation="horizontal">
         <Button
             android:id="@+id/merge_word"
@@ -57,6 +58,13 @@
             android:layout_weight="1"
             android:layout_height="48dp"
             android:text="清理数据"/>
+        <Button
+            android:id="@+id/start_scan_form"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:text="扫描表格"/>
+
     </LinearLayout>
 
 </LinearLayout>

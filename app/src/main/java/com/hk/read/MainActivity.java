@@ -13,6 +13,7 @@ import com.baidu.ocr.sdk.OCR;
 import com.baidu.ocr.sdk.OnResultListener;
 import com.baidu.ocr.sdk.exception.OCRError;
 import com.baidu.ocr.sdk.model.AccessToken;
+import com.hk.read.app.MyApplication;
 import com.hk.read.base.BaseActivity;
 import com.hk.read.ocr.OCRActivity;
 import com.hk.read.translate.ClipBoardActivity;
@@ -63,7 +64,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void onResult(AccessToken result) {
                         // 调用成功，返回AccessToken对象
-                        baiduToken = result.getAccessToken();
+                        String baiduToken = result.getAccessToken();
+                        ((MyApplication) getApplication()).setToken(baiduToken);
                         Log.e("====", "baiduToken:" + baiduToken);
 //                        Toast.makeText(getApplicationContext(), "文字识别授权成功:" + token, Toast.LENGTH_LONG).show();
                     }

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ public class FileUtil {
         File file = new File(parentFile, "第" + page + "页.txt");
         return file;
     }
+
     public static List<String> getAllSaveTxtFile(Context context) {
         ArrayList<String> filePahts = new ArrayList<>();
         File directory = Environment.getExternalStorageDirectory();
@@ -73,12 +75,49 @@ public class FileUtil {
             return filePahts;
         }
         for (File file : parentFile.listFiles()) {
-            if (file.isFile()){
+            if (file.isFile()) {
                 filePahts.add(file.getAbsolutePath());
             }
         }
         return filePahts;
     }
+
+    public static File appendTxt(String fileName, String txt, OnFileOprateListener listener) {
+        File directory = Environment.getExternalStorageDirectory();
+        if (!directory.exists()) {
+            listener.sendMesage(0, "当前系统不具备SD卡目录");
+            return null;
+        }
+        File parentFile = new File(directory, WORDS_DIRECTORY_NAME);
+        if (!parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+        File myFile = new File(parentFile, fileName);
+        try {
+            if (!myFile.exists()) {
+                myFile.createNewFile();
+            }
+            Log.i(TAG, "文件创建完成");
+            listener.sendMesage(0, "\n文件创建完成");
+            String file = getTxtFromFile(myFile);
+            StringBuilder builder = new StringBuilder(file);
+            FileOutputStream fos = new FileOutputStream(myFile);
+            OutputStreamWriter osw = new OutputStreamWriter(fos, "gb2312");
+            builder.append(txt);
+            osw.write(builder.toString());
+            osw.flush();
+            fos.flush();
+            osw.close();
+            fos.close();
+            Log.i(TAG, myFile.getAbsolutePath() + "");
+            listener.sendMesage(0, "\n写入成功，" + myFile.getAbsolutePath());
+            return myFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return myFile;
+    }
+
     public static File saveFile(String fileName, String txt, OnFileOprateListener listener) {
         File directory = Environment.getExternalStorageDirectory();
         if (!directory.exists()) {
@@ -372,9 +411,9 @@ public class FileUtil {
 
             try {
                 context.startActivity(Intent.createChooser(intent, file.getName()));
-                listener.sendMesage(0,"\n发送成功");
+                listener.sendMesage(0, "\n发送成功");
             } catch (Exception e) {
-                listener.sendMesage(0,"\n发送失败");
+                listener.sendMesage(0, "\n发送失败");
                 e.printStackTrace();
             }
         }
@@ -506,4 +545,27 @@ public class FileUtil {
         return builder.toString();
     }
 
+    /**
+     * @return
+     * @Description: 根据图片地址转换为base64编码字符串
+     * @Author:
+     * @CreateTime:
+     */
+    public static String getImageStr(String imgFile) {
+        InputStream inputStream = null;
+        byte[] data = null;
+        try {
+            inputStream = new FileInputStream(imgFile);
+            data = new byte[inputStream.available()];
+            inputStream.read(data);
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 加密
+        String encode = Base64Utils.encode(data);
+
+
+        return encode;
+    }
 }

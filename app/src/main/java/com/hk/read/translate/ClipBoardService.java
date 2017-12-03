@@ -69,7 +69,7 @@ public class ClipBoardService extends Service {
                         }
 
                         @Override
-                        public void onFial() {
+                        public void onFial(int statu,String msg) {
                             Toast.makeText(ClipBoardService.this, "翻译失败", Toast.LENGTH_SHORT).show();
                         }
                     });
